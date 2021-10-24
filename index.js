@@ -1,6 +1,7 @@
 // Packages
 const { constants } = require("http2");
 const inquirer = require("inquirer");
+const { waitForDebugger } = require("inspector");
 const mysql = require('mysql2');
 const { start } = require("repl");
 // Run 'brew services start mysql' to start the local MySQL server.
@@ -19,7 +20,6 @@ const viewAllEmployeesChoice = "View All Employees";
 const addARoleChoice = "Add a Role";
 const addAnEmployeeChoice = "Add an Employee";
 const updateEmployeeRoleChoice = "Update an Employee Role";
-
 const promptQuestion = [
     {
         type: "rawlist",
@@ -35,6 +35,9 @@ const promptQuestion = [
         name: "menu"
     }
 ]
+
+// SQL Queries
+dbQuery = "CREATE DATABASE IF NOT EXISTS cms";
 
 // Menu
 function promptMenu() {
@@ -66,7 +69,6 @@ function handlePromptResponse(choice) {
     }
 }
 
-// Menu Functions
 function viewAllDepartments() {
     logMessage(viewAllDepartmentsChoice + " Selected.");
 }
@@ -98,23 +100,31 @@ function logMessage(str) {
     }
 }
 
+function executeQuery(query, closure) {
+    sqlConnection.execute(query, (err, result) => {
+        if (err) { 
+            logMessage(err);
+        } else {
+            logMessage(result);
+            closure();
+        };
+    });
+}
+
+// Command Line Initial Control
 function initializeDatabase() {
     sqlConnection = mysql.createConnection({
         host: host,
         user: username,
-        port: port,
-        database: database
+        port: port
     });
     sqlConnection.connect(err => { 
-        if (err) { throw err };
-        logMessage("MySQL connection started.");
+        if (err) { 
+            logMessage(err);
+        } else {
+            logMessage("MySQL connection started.");
+        };
     });
-    sqlConnection.execute('CREATE DATABASE [IF NOT EXISTS] cms', (err, result) => {
-        if (err) { throw err };
-        logMessage(result);
-    });
+    executeQuery(dbQuery, promptMenu);
 }
-
-// Entry
 initializeDatabase();
-promptMenu();
