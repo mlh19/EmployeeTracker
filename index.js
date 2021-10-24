@@ -10,7 +10,7 @@ var sqlConnection;
 const host = "127.0.0.1";
 const port = "3306";
 const username = "root";
-const database = "cms";
+const database = "employeetracker_db";
 
 // - Properties
 var isDebug = true;
@@ -37,10 +37,12 @@ const promptQuestion = [
 ]
 
 // - SQL Queries
-dbQuery = "CREATE DATABASE IF NOT EXISTS cms";
+dbQuery = "CREATE DATABASE IF NOT EXISTS employeetracker_db";
 
 // - Menu
 function promptMenu() {
+    // This function is called after a successful SQL connection.
+    
     inquirer
     .prompt(promptQuestion)
     .then((response) => handlePromptResponse(response.menu))
@@ -58,7 +60,8 @@ function handlePromptResponse(choice) {
         case viewAllEmployeesChoice: 
             viewAllEmployees();
             break;
-        case addARoleChoice: addARole();
+        case addARoleChoice: 
+            addARole();
             break;
         case addAnEmployeeChoice: 
             addAnEmployee();
@@ -114,10 +117,12 @@ function executeQuery(query, closure) {
 
 // - Program Start
 function initializeDatabase() {
+    // This connection requires a MySQL local instance to be running.
     sqlConnection = mysql.createConnection({
         host: host,
         user: username,
-        port: port
+        port: port,
+        password: 'Idasftw1'
     });
     sqlConnection.connect(err => { 
         if (err) { 
