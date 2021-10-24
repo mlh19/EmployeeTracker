@@ -30,14 +30,11 @@ const promptQuestion = [
 function promptMenu() {
     inquirer
     .prompt(promptQuestion)
-    .then((response) => 
-        handlePromptResponse(response.menu)
-    )
+    .then((response) => handlePromptResponse(response.menu))
     .catch((err) => console.error(err));
 }
 promptMenu();
 
-// Helper Functions
 function handlePromptResponse(choice) {
     switch (choice) {
         case 
