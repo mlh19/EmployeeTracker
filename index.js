@@ -1,5 +1,15 @@
 // Packages
+const { constants } = require("http2");
 const inquirer = require("inquirer");
+const mysql = require('mysql2');
+const { start } = require("repl");
+// Run 'brew services start mysql' to start the local MySQL server.
+// Run 'brew services stop mysql' to end the connection.
+var sqlConnection;
+const host = "127.0.0.1";
+const port = "3306";
+const username = "root";
+const database = "cms";
 
 // Properties
 var isDebug = true;
@@ -31,14 +41,13 @@ function promptMenu() {
     inquirer
     .prompt(promptQuestion)
     .then((response) => handlePromptResponse(response.menu))
-    .catch((err) => console.error(err));
+    .catch((err) => console.error("There was an error: " + err));
 }
-promptMenu();
 
 function handlePromptResponse(choice) {
     switch (choice) {
-        case 
-            viewAllDepartmentsChoice: viewAllDepartments();
+        case viewAllDepartmentsChoice: 
+            viewAllDepartments();
             break;
         case viewAllRolesChoice: 
             viewAllRoles();
@@ -88,3 +97,24 @@ function logMessage(str) {
         console.log(str);
     }
 }
+
+function initializeDatabase() {
+    sqlConnection = mysql.createConnection({
+        host: host,
+        user: username,
+        port: port,
+        database: database
+    });
+    sqlConnection.connect(err => { 
+        if (err) { throw err };
+        logMessage("MySQL connection started.");
+    });
+    sqlConnection.execute('CREATE DATABASE [IF NOT EXISTS] cms', (err, result) => {
+        if (err) { throw err };
+        logMessage(result);
+    });
+}
+
+// Entry
+initializeDatabase();
+promptMenu();
