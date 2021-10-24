@@ -1,4 +1,4 @@
-// Packages
+// - Packages
 const { constants } = require("http2");
 const inquirer = require("inquirer");
 const { waitForDebugger } = require("inspector");
@@ -12,7 +12,7 @@ const port = "3306";
 const username = "root";
 const database = "cms";
 
-// Properties
+// - Properties
 var isDebug = true;
 const viewAllDepartmentsChoice = "View All Departments";
 const viewAllRolesChoice = "View All Roles";
@@ -36,10 +36,10 @@ const promptQuestion = [
     }
 ]
 
-// SQL Queries
+// - SQL Queries
 dbQuery = "CREATE DATABASE IF NOT EXISTS cms";
 
-// Menu
+// - Menu
 function promptMenu() {
     inquirer
     .prompt(promptQuestion)
@@ -93,13 +93,14 @@ function updateEmployeeRole() {
     logMessage(updateEmployeeRoleChoice + " Selected.");
 }
 
-// Helper Functions
+// - Helper Functions
 function logMessage(str) {
     if (isDebug) {
         console.log(str);
     }
 }
 
+// Executes a query and then runs the closure after it's successful.
 function executeQuery(query, closure) {
     sqlConnection.execute(query, (err, result) => {
         if (err) { 
@@ -111,7 +112,7 @@ function executeQuery(query, closure) {
     });
 }
 
-// Command Line Initial Control
+// - Program Start
 function initializeDatabase() {
     sqlConnection = mysql.createConnection({
         host: host,
