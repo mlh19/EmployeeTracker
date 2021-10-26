@@ -17,6 +17,7 @@ var isDebug = true;
 const viewAllDepartmentsChoice = "View All Departments";
 const viewAllRolesChoice = "View All Roles";
 const viewAllEmployeesChoice = "View All Employees";
+const addADepartmentChoice = "Add a Department";
 const addARoleChoice = "Add a Role";
 const addAnEmployeeChoice = "Add an Employee";
 const updateEmployeeRoleChoice = "Update an Employee Role";
@@ -28,6 +29,7 @@ const promptQuestion = [
             viewAllDepartmentsChoice,
             viewAllRolesChoice,
             viewAllEmployeesChoice,
+            addADepartmentChoice,
             addARoleChoice,
             addAnEmployeeChoice,
             updateEmployeeRoleChoice
@@ -35,38 +37,51 @@ const promptQuestion = [
         name: "menu"
     }
 ]
+// name, salary, and department
+const addARoleQuestions = [
+    { type: "input", name: "role", message: "Enter New Role: " },
+    { type: "input", name: "salary", message: "Enter Salary: $" },
+    { type: "input", name: "department", message: "Enter Department to Add To: " }
+]
 
 // - SQL Queries
+createTable = "CREATE TABLE IF NOT EXISTS ";
 dbQuery = "CREATE DATABASE IF NOT EXISTS employeetracker_db";
+deptTableQuery = createTable + "department (id INT PRIMARY KEY, name varchar(30)); ";
+roleTableQuery = createTable + "role (id INT PRIMARY KEY, title varchar(30), salary DECIMAL, department_id INT); ";
+employeeTableQuery = createTable + "employee (id INT PRIMARY KEY, first_name varchar(30), last_name varchar(30), role_id INT, manager_id INT); ";
+useDbQuery = "USE employeetracker_db";
 
 // - Menu
 function promptMenu() {
     // This function is called after a successful SQL connection.
-    
     inquirer
-    .prompt(promptQuestion)
-    .then((response) => handlePromptResponse(response.menu))
-    .catch((err) => console.error("There was an error: " + err));
+        .prompt(promptQuestion)
+        .then((response) => handlePromptResponse(response.menu))
+        .catch((err) => console.error("There was an error: " + err));
 }
 
 function handlePromptResponse(choice) {
     switch (choice) {
-        case viewAllDepartmentsChoice: 
+        case viewAllDepartmentsChoice:
             viewAllDepartments();
             break;
-        case viewAllRolesChoice: 
+        case viewAllRolesChoice:
             viewAllRoles();
             break;
-        case viewAllEmployeesChoice: 
+        case viewAllEmployeesChoice:
             viewAllEmployees();
             break;
-        case addARoleChoice: 
+        case addADepartmentChoice:
+            addADepartment();
+            break;
+        case addARoleChoice:
             addARole();
             break;
-        case addAnEmployeeChoice: 
+        case addAnEmployeeChoice:
             addAnEmployee();
             break;
-        case updateEmployeeRoleChoice: 
+        case updateEmployeeRoleChoice:
             updateEmployeeRole();
             break;
     }
@@ -84,8 +99,27 @@ function viewAllEmployees() {
     logMessage(viewAllEmployeesChoice + " Selected.");
 }
 
+function addADepartment() {
+    logMessage(addADepartmentChoice + " Selected.");
+    inquirer
+        .prompt({ type: "input", name: "department", message: "Enter New Department Name: " })
+        .then((response) => {
+            const query = "";
+            executeQuery(query, promptMenu())
+        })
+        .catch((err) => console.error("There was an error: " + err));
+}
+
 function addARole() {
     logMessage(addARoleChoice + " Selected.");
+    //name, salary, and department
+    inquirer
+        .prompt(addARoleQuestions)
+        .then((response) => {
+            const query = "";
+            executeQuery(query, promptMenu())
+        })
+        .catch((err) => console.error("There was an error: " + err));
 }
 
 function addAnEmployee() {
@@ -106,11 +140,11 @@ function logMessage(str) {
 // Executes a query and then runs the closure after it's successful.
 function executeQuery(query, closure) {
     sqlConnection.execute(query, (err, result) => {
-        if (err) { 
+        if (err) {
             logMessage(err);
         } else {
             logMessage(result);
-            closure();
+            if (closure != null) { closure(); }
         };
     });
 }
@@ -122,15 +156,32 @@ function initializeDatabase() {
         host: host,
         user: username,
         port: port,
-        password: 'Idasftw1'
+        password: 'Idasftw1',
     });
-    sqlConnection.connect(err => { 
-        if (err) { 
+    sqlConnection.connect(err => {
+        if (err) {
             logMessage(err);
         } else {
             logMessage("MySQL connection started.");
         };
     });
-    executeQuery(dbQuery, promptMenu);
+    sqlConnection.execute(dbQuery, (err, result) => {
+        if (err) {
+            logMessage(err);
+        } else {
+            logMessage(result);
+            // Fixes an issue where it says there is no selected database.
+            sqlConnection = mysql.createConnection({
+                host: host,
+                user: username,
+                port: port,
+                //password: 'Idasftw1',
+                database: database
+            });
+            executeQuery(deptTableQuery, null);
+            executeQuery(roleTableQuery, null);
+            executeQuery(employeeTableQuery, promptMenu);
+        };
+    });
 }
 initializeDatabase();
