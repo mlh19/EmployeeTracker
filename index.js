@@ -47,9 +47,9 @@ const addARoleQuestions = [
 // - SQL Queries
 createTable = "CREATE TABLE IF NOT EXISTS ";
 dbQuery = "CREATE DATABASE IF NOT EXISTS employeetracker_db";
-deptTableQuery = createTable + "department (id INT PRIMARY KEY, name varchar(30)); ";
-roleTableQuery = createTable + "role (id INT PRIMARY KEY, title varchar(30), salary DECIMAL, department_id INT); ";
-employeeTableQuery = createTable + "employee (id INT PRIMARY KEY, first_name varchar(30), last_name varchar(30), role_id INT, manager_id INT); ";
+deptTableQuery = createTable + "department (id INT PRIMARY KEY AUTO_INCREMENT, name varchar(30)); ";
+roleTableQuery = createTable + "role (id INT PRIMARY KEY AUTO_INCREMENT, title varchar(30), salary DECIMAL, department_id INT); ";
+employeeTableQuery = createTable + "employee (id INT PRIMARY KEY AUTO_INCREMENT, first_name varchar(30), last_name varchar(30), role_id INT, manager_id INT); ";
 useDbQuery = "USE employeetracker_db";
 
 // - Menu
@@ -104,8 +104,8 @@ function addADepartment() {
     inquirer
         .prompt({ type: "input", name: "department", message: "Enter New Department Name: " })
         .then((response) => {
-            const query = "";
-            executeQuery(query, promptMenu())
+            const query = `INSERT INTO department(name) VALUES ('${response.department}')`;
+            executeQuery(query, promptMenu());
         })
         .catch((err) => console.error("There was an error: " + err));
 }
@@ -116,7 +116,7 @@ function addARole() {
     inquirer
         .prompt(addARoleQuestions)
         .then((response) => {
-            const query = "";
+            const query = `SELECT id INTO @deptid FROM department WHERE name = '${response.department}'; SELECT @deptid; INSERT INTO role(title, salary, department_id) VALUES ('${response.role}', '${response.salary}', @deptid)`;
             executeQuery(query, promptMenu())
         })
         .catch((err) => console.error("There was an error: " + err));
@@ -156,7 +156,7 @@ function initializeDatabase() {
         host: host,
         user: username,
         port: port,
-        password: 'Idasftw1',
+        //password: 'Idasftw1',
     });
     sqlConnection.connect(err => {
         if (err) {
