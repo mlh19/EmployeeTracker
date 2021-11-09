@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 const { waitForDebugger } = require("inspector");
 const mysql = require('mysql2');
 const { start } = require("repl");
+const cTable = require("console.table");
 // Run 'brew services start mysql' to start the local MySQL server.
 // Run 'brew services stop mysql' to end the connection.
 var sqlConnection;
@@ -13,7 +14,7 @@ const username = "root";
 const database = "employeetracker_db";
 
 // - Properties
-var isDebug = true;
+var isDebug = false;
 const viewAllDepartmentsChoice = "View All Departments";
 const viewAllRolesChoice = "View All Roles";
 const viewAllEmployeesChoice = "View All Employees";
@@ -89,14 +90,20 @@ function handlePromptResponse(choice) {
 
 function viewAllDepartments() {
     logMessage(viewAllDepartmentsChoice + " Selected.");
+    const query = 'SELECT name FROM department';
+    executeQuery(query, promptMenu());
 }
 
 function viewAllRoles() {
     logMessage(viewAllRolesChoice + " Selected.");
+    const query = 'SELECT title FROM role';
+    executeQuery(query, promptMenu());
 }
 
 function viewAllEmployees() {
     logMessage(viewAllEmployeesChoice + " Selected.");
+    const query = 'SELECT first_name, last_name FROM employee';
+    executeQuery(query, promptMenu());
 }
 
 function addADepartment() {
@@ -156,7 +163,7 @@ function initializeDatabase() {
         host: host,
         user: username,
         port: port,
-        //password: 'Idasftw1',
+        password: 'Idasftw1',
     });
     sqlConnection.connect(err => {
         if (err) {
@@ -175,7 +182,7 @@ function initializeDatabase() {
                 host: host,
                 user: username,
                 port: port,
-                //password: 'Idasftw1',
+                password: 'Idasftw1',
                 database: database
             });
             executeQuery(deptTableQuery, null);
