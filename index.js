@@ -151,7 +151,13 @@ function addAnEmployee() {
 
 function updateEmployeeRole() {
     logMessage(updateEmployeeRoleChoice + " Selected.");
-    
+    inquirer.prompt([{ type: "input", name: "empid", message: "Enter employee's id: "}, 
+                     { type: "input", name: "role", message: "Enter employee's new role id: "}])
+    .then((response) => {
+        const query = `SELECT * FROM employee WHERE id = ${response.empid}; UPDATE employee SET role_id = ${response.role} WHERE id = ${response.empid};`;
+        executeQuery(query, promptMenu())
+    })
+    .catch((err) => console.error("There was an error: " + err));
 }
 
 // - Helper Functions
