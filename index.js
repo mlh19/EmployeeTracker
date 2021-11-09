@@ -50,7 +50,7 @@ const addAnEmployeeQuestions = [
     { type: "input", name: "firstName", message: "Enter the first name: " },
     { type: "input", name: "lastName", message: "Enter the last name: " },
     { type: "input", name: "role", message: "Enter the role: " },
-    { type: "input", name: "manager", message: "Enter their manager's first name: "}
+    { type: "input", name: "manager", message: "Enter their manager's first name: " }
 ]
 
 // - SQL Queries
@@ -141,16 +141,17 @@ function addAnEmployee() {
     logMessage(addAnEmployeeChoice + " Selected.");
     //name, salary, and department
     inquirer
-    .prompt(addAnEmployeeQuestions)
-    .then((response) => {
-        const query = `SELECT id INTO @roleid FROM role WHERE title = '${response.role}'; SELECT @roleid; SELECT id INTO @managerid FROM employee WHERE first_name = '${response.manager}'; SELECT @deptid; INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ('${response.firstName}', '${response.lastName}', @roleid, @managerid)`;
-        executeQuery(query, promptMenu())
-    })
-    .catch((err) => console.error("There was an error: " + err));
+        .prompt(addAnEmployeeQuestions)
+        .then((response) => {
+            const query = `SELECT id INTO @roleid FROM role WHERE title = '${response.role}'; SELECT @roleid; SELECT id INTO @managerid FROM employee WHERE first_name = '${response.manager}'; SELECT @deptid; INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ('${response.firstName}', '${response.lastName}', @roleid, @managerid)`;
+            executeQuery(query, promptMenu())
+        })
+        .catch((err) => console.error("There was an error: " + err));
 }
 
 function updateEmployeeRole() {
     logMessage(updateEmployeeRoleChoice + " Selected.");
+    
 }
 
 // - Helper Functions
