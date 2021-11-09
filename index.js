@@ -14,7 +14,7 @@ const username = "root";
 const database = "employeetracker_db";
 
 // - Properties
-var isDebug = false;
+var isDebug = true;
 const viewAllDepartmentsChoice = "View All Departments";
 const viewAllRolesChoice = "View All Roles";
 const viewAllEmployeesChoice = "View All Employees";
@@ -43,6 +43,14 @@ const addARoleQuestions = [
     { type: "input", name: "role", message: "Enter New Role: " },
     { type: "input", name: "salary", message: "Enter Salary: $" },
     { type: "input", name: "department", message: "Enter Department to Add To: " }
+]
+
+// first name, last name, role, manager
+const addAnEmployeeQuestions = [
+    { type: "input", name: "firstName", message: "Enter the first name: " },
+    { type: "input", name: "lastName", message: "Enter the last name: " },
+    { type: "input", name: "role", message: "Enter the role: " },
+    { type: "input", name: "manager", message: "Enter their manager's first name: "}
 ]
 
 // - SQL Queries
@@ -90,20 +98,20 @@ function handlePromptResponse(choice) {
 
 function viewAllDepartments() {
     logMessage(viewAllDepartmentsChoice + " Selected.");
-    const query = 'SELECT name FROM department';
-    executeQuery(query, promptMenu());
+    const query = 'SELECT * FROM department';
+    executeDisplayQuery(query, promptMenu());
 }
 
 function viewAllRoles() {
     logMessage(viewAllRolesChoice + " Selected.");
-    const query = 'SELECT title FROM role';
-    executeQuery(query, promptMenu());
+    const query = 'SELECT * FROM role';
+    executeDisplayQuery(query, promptMenu());
 }
 
 function viewAllEmployees() {
     logMessage(viewAllEmployeesChoice + " Selected.");
-    const query = 'SELECT first_name, last_name FROM employee';
-    executeQuery(query, promptMenu());
+    const query = 'SELECT * FROM employee';
+    executeDisplayQuery(query, promptMenu());
 }
 
 function addADepartment() {
@@ -131,6 +139,14 @@ function addARole() {
 
 function addAnEmployee() {
     logMessage(addAnEmployeeChoice + " Selected.");
+    //name, salary, and department
+    inquirer
+    .prompt(addAnEmployeeQuestions)
+    .then((response) => {
+        const query = `SELECT id INTO @roleid FROM role WHERE title = '${response.role}'; SELECT @roleid; SELECT id INTO @managerid FROM employee WHERE first_name = '${response.manager}'; SELECT @deptid; INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ('${response.firstName}', '${response.lastName}', @roleid, @managerid)`;
+        executeQuery(query, promptMenu())
+    })
+    .catch((err) => console.error("There was an error: " + err));
 }
 
 function updateEmployeeRole() {
@@ -151,6 +167,17 @@ function executeQuery(query, closure) {
             logMessage(err);
         } else {
             logMessage(result);
+            if (closure != null) { closure(); }
+        };
+    });
+}
+
+function executeDisplayQuery(query, closure) {
+    sqlConnection.execute(query, (err, result) => {
+        if (err) {
+            logMessage(err);
+        } else {
+            console.log(result);
             if (closure != null) { closure(); }
         };
     });
