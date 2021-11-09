@@ -1,0 +1,25 @@
+{
+  "name": "pkg",
+  "version": "1.0.0",
+  "description": "A business owner wants to be able to view and manage the departments, roles, and employees in their company so they can organize and plan business",
+  "main": "index.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.3-rc.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlh19/EmployeeTracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mlh19/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/mlh19/EmployeeTracker#readme"
+}
