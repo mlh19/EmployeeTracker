@@ -53,13 +53,6 @@ const addAnEmployeeQuestions = [
     { type: "input", name: "manager", message: "Enter their manager's first name: " }
 ]
 
-// - SQL Queries
-createTable = "CREATE TABLE IF NOT EXISTS ";
-dbQuery = "CREATE DATABASE IF NOT EXISTS employeetracker_db";
-deptTableQuery = createTable + "department (id INT PRIMARY KEY AUTO_INCREMENT, name varchar(30)); ";
-roleTableQuery = createTable + "role (id INT PRIMARY KEY AUTO_INCREMENT, title varchar(30), salary DECIMAL, department_id INT); ";
-employeeTableQuery = createTable + "employee (id INT PRIMARY KEY AUTO_INCREMENT, first_name varchar(30), last_name varchar(30), role_id INT, manager_id INT); ";
-useDbQuery = "USE employeetracker_db";
 
 // - Menu
 function promptMenu() {
@@ -149,15 +142,16 @@ function addAnEmployee() {
         .catch((err) => console.error("There was an error: " + err));
 }
 
-function updateEmployeeRole() {
+async function updateEmployeeRole() {
     logMessage(updateEmployeeRoleChoice + " Selected.");
-    inquirer.prompt([{ type: "input", name: "empid", message: "Enter employee's id: "}, 
-                     { type: "input", name: "role", message: "Enter employee's new role id: "}])
-    .then((response) => {
-        const query = `SELECT * FROM employee WHERE id = ${response.empid}; UPDATE employee SET role_id = ${response.role} WHERE id = ${response.empid};`;
-        executeQuery(query, promptMenu())
-    })
-    .catch((err) => console.error("There was an error: " + err));
+    const allEmployees=await sqlConnection.promise().query("select id, first_name from employee")
+    const allRoles=await sqlConnection.promise().query("select id, title from role")
+   
+    const response=await inquirer.prompt([{ type: "list", name: "empid", message: "Select Employee: ", choices: allEmployees[0].map((employee)=> ({name: employee.first_name, value: employee.id}))}, 
+                     { type: "list", name: "role", message: "Select Employee's new role: ", choices: allRoles[0].map((role)=>({name: role.title, value: role.id}))}])
+        // executeQuery(query, promptMenu())
+        sqlConnection.promise().query("UPDATE employee set role_id = ? WHERE id = ?", [response.role, response.empid]);
+        promptMenu();
 }
 
 // - Helper Functions
@@ -184,7 +178,7 @@ function executeDisplayQuery(query, closure) {
         if (err) {
             logMessage(err);
         } else {
-            console.log(result);
+            console.table(result);
             if (closure != null) { closure(); }
         };
     });
@@ -198,31 +192,18 @@ function initializeDatabase() {
         user: username,
         port: port,
         password: 'Idasftw1',
+        database: "employeetracker_db"
     });
     sqlConnection.connect(err => {
         if (err) {
             logMessage(err);
         } else {
             logMessage("MySQL connection started.");
+            promptMenu();
+
         };
     });
-    sqlConnection.execute(dbQuery, (err, result) => {
-        if (err) {
-            logMessage(err);
-        } else {
-            logMessage(result);
-            // Fixes an issue where it says there is no selected database.
-            sqlConnection = mysql.createConnection({
-                host: host,
-                user: username,
-                port: port,
-                password: 'Idasftw1',
-                database: database
-            });
-            executeQuery(deptTableQuery, null);
-            executeQuery(roleTableQuery, null);
-            executeQuery(employeeTableQuery, promptMenu);
-        };
-    });
+    
 }
+
 initializeDatabase();
