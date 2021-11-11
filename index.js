@@ -5,6 +5,10 @@ const { waitForDebugger } = require("inspector");
 const mysql = require('mysql2');
 const { start } = require("repl");
 const cTable = require("console.table");
+const logo = require("asciiart-logo");
+const longText = "A Mary Lou Production";
+const config = require('./package.json');
+console.log(logo(config).render());
 const util = require("util");
 // Run 'brew services start mysql' to start the local MySQL server.
 // Run 'brew services stop mysql' to end the connection.
@@ -19,11 +23,33 @@ const sqlConnection = mysql.createConnection({
     password: 'Idasftw1',
     database: "employeetracker_db"
 });
+async function welcome(){
+    console.log(
+      logo({
+        name: 'STEM',
+        font: 'Bear',
+        lineChars: 10,
+        padding: 2,
+        margin: 3,
+        borderColor: 'grey',
+        logoColor: 'bold-green',
+        textColor: 'green',
+    })
+    .emptyLine()
+    .right('version 3.7.123')
+    .emptyLine()
+    .center(longText)
+    .render()
+  );
+}
+
+
 sqlConnection.connect(err => {
     if (err) {
         logMessage(err);
     } else {
         logMessage("MySQL connection started.");
+        welcome();
         promptMenu();
 
 }});
@@ -39,6 +65,7 @@ sqlConnection.connect(err => {
     const addARoleChoice = "Add a Role";
     const addAnEmployeeChoice = "Add an Employee";
     const updateEmployeeRoleChoice = "Update an Employee Role";
+    const quitter = "Do you want to quit?";
     const promptQuestion = [
         {
             type: "rawlist",
@@ -50,7 +77,8 @@ sqlConnection.connect(err => {
                 addADepartmentChoice,
                 addARoleChoice,
                 addAnEmployeeChoice,
-                updateEmployeeRoleChoice
+                updateEmployeeRoleChoice,
+                quitter
             ],
             name: "menu"
         }
@@ -80,6 +108,26 @@ sqlConnection.connect(err => {
             .catch((err) => console.error("There was an error: " + err));
     }
 
+    function exitNow() {
+        console.log(
+          logo({
+            name: 'carpe diem',
+            font: 'Bolger',
+            lineChars: 20,
+            padding: 2,
+            margin: 3,
+            borderColor: 'grey',
+            logoColor: 'bold-pink',
+            textColor: 'pink',
+        })
+        .emptyLine()
+        .right('version 3.7.123')
+        .emptyLine()
+        .center(longText)
+        .render()
+      );
+    }
+
     function handlePromptResponse(choice) {
         switch (choice) {
             case viewAllDepartmentsChoice:
@@ -103,6 +151,9 @@ sqlConnection.connect(err => {
             case updateEmployeeRoleChoice:
                 updateEmployeeRole();
                 break;
+            case quitter:
+                    exitNow();
+                    break;
         }
     }
 
@@ -206,3 +257,25 @@ sqlConnection.connect(err => {
         });
     }
 
+      
+
+
+    function exitNow() {
+        console.log(
+          logo({
+            name: 'carpe diem',
+            font: 'Bolger',
+            lineChars: 20,
+            padding: 2,
+            margin: 3,
+            borderColor: 'grey',
+            logoColor: 'bold-pink',
+            textColor: 'pink',
+        })
+        .emptyLine()
+        .right('version 3.7.123')
+        .emptyLine()
+        .center(longText)
+        .render()
+      );
+    }

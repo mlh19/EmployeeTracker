@@ -27,5 +27,13 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 # Other Details
 
+- worked on this assignment indepndently
+
+- Uses the Inquirer package
+
+- Uses the MySQL2 packageto connect to a MySQL database
+
+- Uses the console.table package to print MySQL rows to the console
+
 
 
