@@ -23,7 +23,15 @@ THEN I am prompted to select an employee to update and their new role and this i
 ```
 # Screenshot | Video
 
+[Link to Video](https://watch.screencastify.com/v/FcrSJlOT6G8WT8qSdYEF)
+
+![Screenshot](./assets/images/screenshot2.png)
+
+![Screenshot](./assets/images/screenshot1.png)
+
 # Deployed Link
+
+[Link to Project](https://mlh19.github.io/EmployeeTracker/)
 
 # Other Details
 
