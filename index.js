@@ -111,7 +111,7 @@ sqlConnection.connect(err => {
     function exitNow() {
         console.log(
           logo({
-            name: 'carpe diem',
+            name: 'carpe code',
             font: 'Bolger',
             lineChars: 20,
             padding: 2,
@@ -188,24 +188,20 @@ sqlConnection.connect(err => {
 
     }
 
-    function addARole() {
+    async function addARole() {
         logMessage(addARoleChoice + " Selected.");
         //name, salary, and department
-        inquirer
-            .prompt(addARoleQuestions)
-            .then((response) => {
-                const departmentArray = query(`SELECT id FROM department WHERE name = ?`, [response.department]);
+                const response = await inquirer.prompt(addARoleQuestions)
+                const departmentArray = await query(`SELECT id FROM department WHERE name = ?`, [response.department]);
                 const deptid = departmentArray[0].id;
-                query(`INSERT INTO role(title, salary, department_id) VALUES (?,?,?)`, [response.role, response.salary, deptid]);
-                // executeQuery(query, promptMenu())
-            })
-            .catch((err) => console.error("There was an error: " + err));
-    }
+                await query(`INSERT INTO role(title, salary, department_id) VALUES (?,?,?)`, [response.role, response.salary, deptid]);
+                promptMenu();
+    } 
 
     async function addAnEmployee() {
         logMessage(addAnEmployeeChoice + " Selected.");
         //name, salary, and department
-        const response= await inquirer.prompt(addAnEmployeeQuestions)
+                const response = await inquirer.prompt(addAnEmployeeQuestions)
                 const roleArray = await query(`SELECT id FROM role WHERE title = ?`, [response.role]);
                 console.log(roleArray);
                 const roleid = roleArray[0].id;
